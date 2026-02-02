@@ -1,0 +1,238 @@
+📘 PRODUCT REQUIREMENTS DOCUMENT (PRD)
+Product Name (Working)
+ChartSense AI (You can rename later — name is not the product)
+
+1. 🎯 Product Vision
+ChartSense AI is an AI-powered chart interpretation tool that helps traders understand market structure, momentum, and strategy bias by analyzing screenshots of trading charts (e.g., TradingView).
+The product acts as a decision-support assistant, not an automated trading bot.
+“Upload your chart → Get trader-style reasoning.”
+
+2. 🚨 Problem Statement
+The Trader’s Problem
+	•	Traders stare at charts for hours
+	•	Bias & emotions distort decisions
+	•	Indicators give signals but lack context
+	•	Beginners don’t know which strategy fits which market
+	•	Experienced traders still seek confirmation or contradiction
+Existing Solutions Fail Because:
+	•	Indicators are mechanical, not contextual
+	•	Trading bots require raw data & execution access
+	•	Most AI tools are either:
+	•	Overpromising predictions, or
+	•	Generic chatbots with no market intuition
+
+3. ✅ Solution Overview
+ChartSense AI:
+	•	Accepts a chart screenshot
+	•	Interprets visual market structure
+	•	Explains:
+	•	Current price behavior
+	•	Market regime (trend / range / breakout)
+	•	Suitable trading strategies
+	•	Provides probabilistic bias, not certainty
+Human remains in control. Always.
+
+4. 👤 Target Users
+Primary Users
+	•	Retail stock traders
+	•	Swing traders
+	•	Technical-analysis-focused traders
+Secondary Users
+	•	Beginner traders (learning aid)
+	•	Trading educators
+	•	Content creators (chart explanations)
+
+5. 🧠 Core Use Case Flow
+User Journey
+	•	User takes a screenshot from TradingView
+	•	Pastes or uploads it to ChartSense AI
+	•	AI analyzes the chart
+	•	AI outputs:
+	•	Market state
+	•	Indicator interpretation
+	•	Strategy suggestions
+	•	Risk & invalidation notes
+
+6. 🧩 Core Features (MVP)
+6.1 Chart Upload & Processing
+Requirements
+	•	Accept PNG / JPG screenshots
+	•	Drag & drop + copy-paste
+	•	Auto-crop chart area
+	•	Remove UI noise (sidebars, legends)
+
+6.2 Visual Chart Understanding
+AI must infer:
+	•	Trend direction
+	•	Higher highs / lower lows
+	•	Consolidation vs expansion
+	•	Breakout zones
+	•	Indicator panels (RSI, MACD, Moving Averages)
+⚠️ Important: AI does visual reasoning, not numerical OHLC extraction.
+
+6.3 Market Regime Classification
+AI classifies chart into one of:
+	•	Trending (bullish / bearish)
+	•	Range-bound
+	•	Breakout / breakdown
+	•	Volatile / indecisive
+
+6.4 Strategy Recommendation Engine
+Based on regime:
+	•	Trend-following
+	•	Pullback trading
+	•	Range trading
+	•	Breakout continuation
+	•	Avoid-trading scenarios
+
+6.5 Output Explanation (Critical)
+Output must include:
+	•	What is happening
+	•	Why it matters
+	•	What traders usually do
+	•	When this view is invalid
+Example format:
+Market Structure:
+- Higher highs & higher lows (bullish)
+
+Momentum:
+- Strong upward candles
+- RSI near upper range (momentum intact)
+
+Suggested Bias:
+- Trend continuation favored
+
+Preferred Strategy:
+- Buy on pullbacks
+- Avoid chasing breakouts
+
+Invalidation:
+- Daily close below support zone
+
+7. 🚫 Explicit Non-Goals (Very Important)
+The product will NOT:
+	•	Place trades
+	•	Predict future prices
+	•	Give guaranteed buy/sell signals
+	•	Act as financial advice
+	•	Connect to broker APIs (MVP)
+This protects you legally and technically.
+
+8. 🏗️ Technical Architecture
+8.1 High-Level Architecture
+Frontend (Web App)
+   ↓
+Image Preprocessing Service
+   ↓
+Vision-Language Model (Hugging Face)
+   ↓
+Financial Reasoning Layer
+   ↓
+Response Formatter
+
+9. 🧠 AI & Model Strategy
+9.1 Model Types Needed
+	•	Vision-Language Model
+	•	Reads chart visually
+	•	Identifies patterns & indicators
+	•	Reasoning Layer (Rules + Prompting)
+	•	Converts observations → trading logic
+
+9.2 Hugging Face Usage (Free Tier Friendly)
+You will:
+	•	Use Hugging Face Inference API
+	•	Prefer open-source multimodal models
+	•	Keep prompts structured and constrained
+Why Hugging Face?
+	•	Open ecosystem
+	•	No vendor lock-in
+	•	Can self-host later
+	•	Works for MVP without cost explosion
+
+10. 🧪 Prompt Engineering Strategy
+Structured Prompt Template
+Instead of:
+“Should I buy this stock?”
+Use:
+You are a professional technical analyst.
+Analyze the uploaded trading chart.
+
+Tasks:
+1. Describe price structure
+2. Identify momentum
+3. Identify visible indicators
+4. Classify market regime
+5. Suggest suitable trading strategies
+6. Define invalidation conditions
+
+Constraints:
+- No price predictions
+- No financial advice
+- Use probabilistic language
+
+11. 🧾 Governance & Safety Layer
+Mandatory Safeguards
+	•	Disclaimer visible on every output
+	•	“Decision-support only” language
+	•	No numeric targets
+	•	No execution recommendations
+This keeps the product clean and scalable.
+
+12. 🖥️ Frontend Requirements
+MVP UI
+	•	Clean upload area
+	•	Image preview
+	•	“Analyze Chart” button
+	•	Structured text output
+	•	Copy/share insights
+Nice-to-have (Later)
+	•	Dark mode (traders care)
+	•	Save analysis history
+	•	Compare multiple charts
+
+13. 📦 Backend Stack (Suggested)
+Backend
+	•	Python
+	•	FastAPI
+	•	Pillow / OpenCV (image preprocessing)
+	•	Hugging Face Inference API
+Frontend
+	•	React or simple web UI
+	•	No heavy frameworks needed initially
+Hosting
+	•	Lightweight cloud VM
+	•	Containerized deployment
+
+14. 📈 MVP Success Metrics
+	•	Time to insight < 10 seconds
+	•	Traders feel:
+“This thinks like a human trader”
+	•	Repeat usage
+	•	Users compare AI insight with their own view
+
+15. 🚀 Future Enhancements (Post-MVP)
+Phase 2
+	•	User-selected indicators
+	•	Timeframe awareness
+	•	Confidence scoring
+	•	Strategy playbooks
+Phase 3
+	•	Multi-chart comparison
+	•	Learning mode for beginners
+	•	Personalized trading style profiles
+
+16. 🧠 Why This Product Can Work
+Because it:
+	•	Solves cognitive load, not execution
+	•	Respects trading realities
+	•	Avoids prediction hype
+	•	Scales from solo trader → SaaS
+	•	Can evolve into AI trading education + intelligence
+
+17. Final Reality Check (Founder-to-Founder)
+Yes, this is feasible Yes, this is valuable Yes, this is buildable by a small team / solo founder
+But it wins only if you:
+	•	Stay disciplined on scope
+	•	Avoid prediction promises
+	•	Focus on reasoning quality, not signals
+
