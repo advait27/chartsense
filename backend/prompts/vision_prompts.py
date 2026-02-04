@@ -70,7 +70,7 @@ REASONING_USER_PROMPT_TEMPLATE = """Based on the following technical chart descr
 Provide a clear, structured analysis with these sections:
 
 ### 1. Market Structure Assessment
-Describe the trend, key support/resistance levels, and any notable patterns. Be specific and concise.
+Describe the trend, key support/resistance levels, and any notable patterns. Be specific with price levels where visible.
 
 ### 2. Momentum Analysis  
 Interpret available momentum indicators. Note any divergences or confirmations. If indicators aren't visible, state this clearly.
@@ -92,22 +92,32 @@ Briefly explain why each may be suitable.
 - Bearish scenario would be invalidated if: [specific levels/conditions]
 - Key decision levels: [specific price levels]
 
-Format your response clearly with headers as shown. Keep each section focused and actionable.
+### 7. Trading Signals
+Based on your analysis, provide specific trading recommendations:
+- **Signal Type**: BUY / SELL / WAIT / NO CLEAR SIGNAL
+- **Entry Level**: [specific price zone or "See key levels above"]
+- **Stop Loss**: [specific price level with pip distance if calculable, e.g., "1.0800 (50 pips)"]
+- **Take Profit 1**: [first target price with pip distance]
+- **Take Profit 2**: [optional second target] (if applicable)
+- **Risk-Reward Ratio**: [e.g., "1:2" or "Estimated 1:2.5"]
+- **Position Sizing**: [e.g., "Risk 1-2% of capital" or specific guidance]
+- **Timeframe Context**: [best timeframe for this setup]
+- **Confidence Score**: [High (70-85%), Medium (50-70%), Low (<50%)]
 
-7. **Risk Considerations**
-   - Highlight potential risks or uncertainties
-   - Note any conflicting signals
-   - Mention what to monitor
+### 8. Risk Considerations
+- Highlight potential risks or uncertainties
+- Note any conflicting signals
+- Mention what to monitor
 
 ## Output Format
-Use clear headings and bullet points. Be concise but thorough.
+Use clear headings and bullet points. Be concise but thorough. Provide specific numbers when available.
 
 ## Critical Reminders
 - Use probabilistic language ("suggests", "may indicate", "could signal")
-- No specific buy/sell orders or entry/exit prices
-- No guaranteed outcomes
+- Provide specific levels but acknowledge they are suggested zones, not guarantees
 - Focus on education and decision-support
 - Acknowledge uncertainty where it exists
+- Trading signals are for educational purposes only
 
 Provide your analysis now:"""
 

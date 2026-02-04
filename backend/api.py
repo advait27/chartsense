@@ -200,6 +200,17 @@ async def analyze_chart(chart: UploadFile = File(...)):
                         "bullish_invalidation": analysis.get("analysis", {}).get("invalidation", {}).get("bullish", ["Not specified"]),
                         "bearish_invalidation": analysis.get("analysis", {}).get("invalidation", {}).get("bearish", ["Not specified"]),
                         "key_levels": analysis.get("analysis", {}).get("invalidation", {}).get("key_levels", ["Not specified"])
+                    },
+                    "trading_signals": {
+                        "signal_type": analysis.get("analysis", {}).get("trading_signals", {}).get("signal_type", "WAIT"),
+                        "entry_level": analysis.get("analysis", {}).get("trading_signals", {}).get("entry_level", "Not specified"),
+                        "stop_loss": analysis.get("analysis", {}).get("trading_signals", {}).get("stop_loss", "Not specified"),
+                        "take_profit_1": analysis.get("analysis", {}).get("trading_signals", {}).get("take_profit_1", "Not specified"),
+                        "take_profit_2": analysis.get("analysis", {}).get("trading_signals", {}).get("take_profit_2"),
+                        "risk_reward_ratio": analysis.get("analysis", {}).get("trading_signals", {}).get("risk_reward_ratio", "Not specified"),
+                        "position_sizing": analysis.get("analysis", {}).get("trading_signals", {}).get("position_sizing", "Risk 1-2% of capital"),
+                        "timeframe_context": analysis.get("analysis", {}).get("trading_signals", {}).get("timeframe_context"),
+                        "confidence_score": analysis.get("analysis", {}).get("trading_signals", {}).get("confidence_score", "Medium")
                     }
                 },
                 "metadata": {

@@ -11,6 +11,8 @@ import {
   Zap,
   Eye
 } from 'lucide-react';
+import TradingSignals from './TradingSignals';
+import RiskCalculator from './RiskCalculator';
 import './AnalysisResults.css';
 
 // Helper function to render markdown-style text
@@ -70,10 +72,33 @@ const AnalysisResults = ({ data, imagePreview }) => {
     return 'var(--accent-yellow)';
   };
 
+  const getSignalBadgeClass = (signalType) => {
+    const type = signalType?.toLowerCase() || '';
+    if (type.includes('buy')) return 'header-signal-badge buy-signal';
+    if (type.includes('sell')) return 'header-signal-badge sell-signal';
+    if (type.includes('wait')) return 'header-signal-badge wait-signal';
+    return 'header-signal-badge neutral-signal';
+  };
+
+  const getSignalIcon = (signalType) => {
+    const type = signalType?.toLowerCase() || '';
+    if (type.includes('buy')) return <TrendingUp size={20} />;
+    if (type.includes('sell')) return <TrendingDown size={20} />;
+    return <Activity size={20} />;
+  };
+
   return (
     <div className="results-container slide-up">
       <div className="results-header">
-        <h2 className="results-title">📊 Analysis Results</h2>
+        <div>
+          <h2 className="results-title">📊 Analysis Results</h2>
+          {data?.reasoning?.trading_signals?.signal_type && (
+            <div className={getSignalBadgeClass(data.reasoning.trading_signals.signal_type)}>
+              {getSignalIcon(data.reasoning.trading_signals.signal_type)}
+              <span>{data.reasoning.trading_signals.signal_type}</span>
+            </div>
+          )}
+        </div>
         <div className="results-meta">
           <span className="meta-badge">
             <Eye size={14} />
@@ -342,6 +367,14 @@ const AnalysisResults = ({ data, imagePreview }) => {
           </div>
         )}
       </CollapsibleSection>
+
+      {/* Trading Signals */}
+      {data?.reasoning?.trading_signals && (
+        <TradingSignals signals={data.reasoning.trading_signals} />
+      )}
+
+      {/* Risk Calculator */}
+      <RiskCalculator />
 
       {/* Disclaimer */}
       <div className="disclaimer-card">

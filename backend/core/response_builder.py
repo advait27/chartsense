@@ -103,6 +103,20 @@ class InvalidationConditions:
 
 
 @dataclass
+class TradingSignals:
+    """Trading signal recommendations with specific levels"""
+    signal_type: str  # "BUY", "SELL", "WAIT", "NO CLEAR SIGNAL"
+    entry_level: Optional[str]  # e.g., "1.0850-1.0870"
+    stop_loss: Optional[str]  # e.g., "1.0800 (50 pips)"
+    take_profit_1: Optional[str]  # e.g., "1.0950 (100 pips)"
+    take_profit_2: Optional[str]  # Optional second target
+    risk_reward_ratio: Optional[str]  # e.g., "1:2"
+    position_sizing: Optional[str]  # e.g., "Risk 1-2% of capital"
+    timeframe_context: Optional[str]  # e.g., "Best for 4H-Daily timeframe"
+    confidence_score: Optional[str]  # e.g., "High (75-85%)"
+
+
+@dataclass
 class RiskConsiderations:
     """Risk and uncertainty assessment"""
     risks: List[str]
@@ -120,6 +134,7 @@ class ReasoningAnalysis:
     strategy_bias: StrategyBiasAnalysis
     suitable_approaches: SuitableApproaches
     invalidation: InvalidationConditions
+    trading_signals: TradingSignals
     risks: RiskConsiderations
     raw_output: str
 
@@ -148,7 +163,8 @@ class ResponseParser:
         'strategy_bias': r'(?:###?\s*)?(?:4\.?\s*)?Strategy Bias',
         'approaches': r'(?:###?\s*)?(?:5\.?\s*)?Suitable Approaches?',
         'invalidation': r'(?:###?\s*)?(?:6\.?\s*)?Invalidation(?:\s+Conditions)?',
-        'risks': r'(?:###?\s*)?(?:7\.?\s*)?Risk(?:\s+Considerations)?',
+        'trading_signals': r'(?:###?\s*)?(?:7\.?\s*)?Trading Signals?',
+        'risks': r'(?:###?\s*)?(?:8\.?\s*)?Risk(?:\s+Considerations)?',
     }
     
     def __init__(self):
@@ -234,6 +250,7 @@ class ResponseParser:
             strategy_bias = self._parse_strategy_bias(raw_output)
             approaches = self._parse_approaches(raw_output)
             invalidation = self._parse_invalidation(raw_output)
+            trading_signals = self._parse_trading_signals(raw_output)
             risks = self._parse_risks(raw_output)
             
             return ReasoningAnalysis(
@@ -243,6 +260,7 @@ class ResponseParser:
                 strategy_bias=strategy_bias,
                 suitable_approaches=approaches,
                 invalidation=invalidation,
+                trading_signals=trading_signals,
                 risks=risks,
                 raw_output=raw_output
             )
@@ -456,6 +474,83 @@ class ResponseParser:
             key_levels=key_levels if key_levels else ["Not specified"]
         )
     
+    def _parse_trading_signals(self, text: str) -> TradingSignals:
+        """Parse trading signals section"""
+        section = self._extract_section_by_pattern(text, [
+            r'(?:###|##)?\s*7\.\s*Trading Signals?.*?(?=###|##|\n\n[A-Z]|\Z)',
+            r'(?:Trading Signal|Signal Recommendation|Trade Setup).*?(?=###|##|\n\n[A-Z]|\Z)'
+        ])
+        
+        if not section:
+            # Generate signals based on strategy bias
+            return self._generate_signals_from_bias(text)
+        
+        # Extract signal type
+        signal_type = "NO CLEAR SIGNAL"
+        for sig in ["BUY", "SELL", "WAIT", "NO CLEAR SIGNAL"]:
+            if sig.lower() in section.lower():
+                signal_type = sig
+                break
+        
+        # Extract entry level
+        entry_level = self._extract_field(section, r'(?:Entry|Entry Level|Entry Zone):?\s*(.+?)(?:\n|$)')
+        
+        # Extract stop loss
+        stop_loss = self._extract_field(section, r'(?:Stop Loss|SL):?\s*(.+?)(?:\n|$)')
+        
+        # Extract take profit
+        take_profit_1 = self._extract_field(section, r'(?:Take Profit|TP|Target)\s*(?:1|One)?:?\s*(.+?)(?:\n|$)')
+        take_profit_2 = self._extract_field(section, r'(?:Take Profit|TP|Target)\s*(?:2|Two):?\s*(.+?)(?:\n|$)')
+        
+        # Extract risk-reward
+        risk_reward = self._extract_field(section, r'(?:Risk[- ]Reward|R:R|RR):?\s*(.+?)(?:\n|$)')
+        
+        # Extract position sizing
+        position_sizing = self._extract_field(section, r'(?:Position Siz|Risk):?\s*(.+?)(?:\n|$)')
+        
+        # Extract timeframe context
+        timeframe_context = self._extract_field(section, r'(?:Timeframe|Best for):?\s*(.+?)(?:\n|$)')
+        
+        # Extract confidence
+        confidence = self._extract_field(section, r'(?:Confidence|Probability):?\s*(.+?)(?:\n|$)')
+        
+        return TradingSignals(
+            signal_type=signal_type,
+            entry_level=entry_level,
+            stop_loss=stop_loss,
+            take_profit_1=take_profit_1,
+            take_profit_2=take_profit_2,
+            risk_reward_ratio=risk_reward,
+            position_sizing=position_sizing or "Risk 1-2% of capital per trade",
+            timeframe_context=timeframe_context,
+            confidence_score=confidence
+        )
+    
+    def _generate_signals_from_bias(self, text: str) -> TradingSignals:
+        """Generate basic signals from strategy bias when no explicit signals section"""
+        # Extract bias from text
+        signal_type = "WAIT"
+        if "strong" in text.lower() and "bullish" in text.lower():
+            signal_type = "BUY"
+        elif "strong" in text.lower() and "bearish" in text.lower():
+            signal_type = "SELL"
+        elif "bullish" in text.lower() and "high" in text.lower():
+            signal_type = "BUY"
+        elif "bearish" in text.lower() and "high" in text.lower():
+            signal_type = "SELL"
+        
+        return TradingSignals(
+            signal_type=signal_type,
+            entry_level="See key levels in Market Structure section",
+            stop_loss="See invalidation conditions",
+            take_profit_1="See key resistance/support levels",
+            take_profit_2=None,
+            risk_reward_ratio="Monitor 1:2 minimum",
+            position_sizing="Risk 1-2% of capital per trade",
+            timeframe_context=None,
+            confidence_score="See Strategy Bias section"
+        )
+    
     def _parse_risks(self, text: str) -> RiskConsiderations:
         """Parse risk considerations section"""
         section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS['risks'])
@@ -573,6 +668,17 @@ class ResponseParser:
                 bullish_invalidation=["Not available"],
                 bearish_invalidation=["Not available"],
                 key_levels=["Not available"]
+            ),
+            trading_signals=TradingSignals(
+                signal_type="WAIT",
+                entry_level="Not available",
+                stop_loss="Not available",
+                take_profit_1="Not available",
+                take_profit_2=None,
+                risk_reward_ratio="Not available",
+                position_sizing="Not available",
+                timeframe_context=None,
+                confidence_score="Not available"
             ),
             risks=RiskConsiderations(
                 risks=["Analysis unavailable"],

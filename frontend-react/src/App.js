@@ -99,6 +99,17 @@ function App() {
         bullish_invalidation: ["Break and hold above 1.20 resistance"],
         bearish_invalidation: ["Price fails to make new lows and breaks above 1.19"],
         key_levels: ["1.16 (critical support)", "1.20 (critical resistance)"]
+      },
+      trading_signals: {
+        signal_type: "SELL",
+        entry_level: "1.1750-1.1780 (on pullback)",
+        stop_loss: "1.1850 (70 pips)",
+        take_profit_1: "1.1610 (140 pips)",
+        take_profit_2: "1.1550 (200 pips)",
+        risk_reward_ratio: "1:2 (TP1) or 1:2.8 (TP2)",
+        position_sizing: "Risk 1-2% of capital per trade. Recommended 1.5% for this setup.",
+        timeframe_context: "Best suited for 4H-Daily swing trades",
+        confidence_score: "High (75-80%)"
       }
     },
     metadata: {
