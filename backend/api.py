@@ -48,7 +48,7 @@ app.add_middleware(
 )
 
 # Initialize orchestrator
-orchestrator = ChartAnalysisOrchestrator(strict_safety=True)
+orchestrator = ChartAnalysisOrchestrator(strict_safety=False)
 image_processor = ImageProcessor()
 
 # Initialize chat client

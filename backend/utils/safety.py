@@ -205,9 +205,8 @@ class SafetyValidator:
         
         # Determine safety level
         if violations and self.strict_mode:
-            if ViolationType.LOW_CONFIDENCE in violations:
-                level = SafetyLevel.BLOCKED
-            elif any(v in violations for v in [
+            # In strict mode, only block on critical violations, not low confidence
+            if any(v in violations for v in [
                 ViolationType.FINANCIAL_ADVICE,
                 ViolationType.TRADE_INSTRUCTION,
                 ViolationType.GUARANTEED_OUTCOME

@@ -37,7 +37,7 @@ class CharteredApp:
     
     def __init__(self):
         """Initialize application"""
-        self.orchestrator = ChartAnalysisOrchestrator(strict_safety=True)
+        self.orchestrator = ChartAnalysisOrchestrator(strict_safety=False)
         logger.info("Chartered application initialized")
     
     def analyze_chart_from_file(
