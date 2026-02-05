@@ -27,7 +27,7 @@ VISION_MODEL_ALTERNATIVES = [
 ]
 
 # Text/Reasoning Model Configuration
-REASONING_MODEL_ID = os.getenv("REASONING_MODEL", "deepseek-ai/DeepSeek-R1")
+REASONING_MODEL_ID = os.getenv("REASONING_MODEL", "meta-llama/Llama-3.3-70B-Instruct")
 REASONING_MODEL_ALTERNATIVES = [
     "deepseek-ai/DeepSeek-R1",                    # DeepSeek R1 (WORKING - reasoning)
     "meta-llama/Llama-3.3-70B-Instruct",          # Llama 3.3 70B
@@ -41,8 +41,8 @@ REASONING_MODEL_ALTERNATIVES = [
 
 # Timeouts (seconds)
 VISION_TIMEOUT = int(os.getenv("VISION_TIMEOUT", "25"))
-REASONING_TIMEOUT = int(os.getenv("REASONING_TIMEOUT", "90"))
-TOTAL_TIMEOUT = int(os.getenv("TOTAL_TIMEOUT", "120"))
+REASONING_TIMEOUT = int(os.getenv("REASONING_TIMEOUT", "45"))
+TOTAL_TIMEOUT = int(os.getenv("TOTAL_TIMEOUT", "75"))
 
 # Retry Configuration
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", "2"))

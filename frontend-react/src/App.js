@@ -34,7 +34,7 @@ function App() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 180000, // 3 minutes for DeepSeek reasoning model
+        timeout: 120000, // 2 minutes for Llama reasoning model
       });
 
       setAnalysisData(response.data);
