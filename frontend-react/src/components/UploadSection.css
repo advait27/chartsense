@@ -34,10 +34,10 @@
 }
 
 .dropzone:hover:not(.disabled) {
-  border-color: var(--accent-blue);
+  border-color: var(--brand-purple);
   background: var(--bg-tertiary);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 30px rgba(139, 127, 217, 0.2);
 }
 
 .dropzone.active {
@@ -59,13 +59,13 @@
   width: 80px;
   height: 80px;
   margin: 0 auto 1.5rem;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  background: var(--brand-purple);
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 20px rgba(139, 127, 217, 0.4);
 }
 
 .dropzone-title {

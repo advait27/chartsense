@@ -23,14 +23,15 @@
 }
 
 .logo-icon {
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  border-radius: 12px;
-  padding: 0.75rem;
+  background: var(--brand-purple);
+  border-radius: 8px;
+  padding: 0.6rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 127, 217, 0.4);
+  border: 2px solid var(--brand-purple-dark);
 }
 
 .logo-text {
@@ -41,18 +42,16 @@
 .logo-title {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .sparkle-icon {
-  color: var(--accent-yellow);
+  color: var(--brand-purple-light);
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -68,7 +67,7 @@
   align-items: center;
   gap: 0.5rem;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--brand-purple-dark);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -79,16 +78,16 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent-green);
+  background: var(--brand-purple-light);
   animation: pulse 2s ease-in-out infinite;
 }
 
 .header-gradient {
   height: 3px;
   background: linear-gradient(90deg, 
-    var(--accent-green) 0%, 
-    var(--accent-blue) 50%, 
-    var(--accent-purple) 100%);
+    var(--brand-purple-dark) 0%, 
+    var(--brand-purple) 50%, 
+    var(--brand-purple-light) 100%);
 }
 
 @media (max-width: 768px) {

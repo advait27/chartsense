@@ -1,6 +1,16 @@
 import React from 'react';
-import { TrendingUp, BarChart3, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import './Header.css';
+
+// Custom logo icon with triangular design
+const CharteredIcon = ({ size = 32 }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 18L12 10L16 18H8Z" fill="currentColor" opacity="0.9"/>
+    <path d="M16 18L20 10L24 18H16Z" fill="currentColor" opacity="0.9"/>
+    <path d="M8 28L12 20L16 28H8Z" fill="currentColor" opacity="0.7"/>
+    <path d="M16 28L20 20L24 28H16Z" fill="currentColor" opacity="0.7"/>
+  </svg>
+);
 
 const Header = () => {
   return (
@@ -8,7 +18,7 @@ const Header = () => {
       <div className="header-content">
         <div className="logo-section">
           <div className="logo-icon">
-            <BarChart3 size={32} />
+            <CharteredIcon size={32} />
           </div>
           <div className="logo-text">
             <h1 className="logo-title">
