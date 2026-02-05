@@ -1,10 +1,10 @@
 """
-Safety and Governance Layer for ChartSense
+Safety and Governance Layer for Chartered
 
 This module provides safety guardrails, disclaimer injection, and output validation
 to ensure responsible AI usage and legal compliance.
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 
@@ -421,7 +421,7 @@ Our safety system detected language that could be misinterpreted as financial ad
 - This is a protective measure, not an error
 - You can try analyzing a different chart
 
-**Remember:** ChartSense is an educational tool for learning technical analysis concepts, not a trading system or financial advisor.
+**Remember:** Chartered is an educational tool for learning technical analysis concepts, not a trading system or financial advisor.
 """
 
 

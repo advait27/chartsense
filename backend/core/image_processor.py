@@ -5,7 +5,7 @@ This module provides functions to preprocess TradingView chart screenshots
 for AI model inference. It handles validation, cropping, normalization,
 and resizing using rule-based approaches (no ML).
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 

@@ -1,9 +1,9 @@
 📘 PRODUCT REQUIREMENTS DOCUMENT (PRD)
 Product Name (Working)
-ChartSense AI (You can rename later — name is not the product)
+Chartered AI (You can rename later — name is not the product)
 
 1. 🎯 Product Vision
-ChartSense AI is an AI-powered chart interpretation tool that helps traders understand market structure, momentum, and strategy bias by analyzing screenshots of trading charts (e.g., TradingView).
+Chartered AI is an AI-powered chart interpretation tool that helps traders understand market structure, momentum, and strategy bias by analyzing screenshots of trading charts (e.g., TradingView).
 The product acts as a decision-support assistant, not an automated trading bot.
 “Upload your chart → Get trader-style reasoning.”
 
@@ -22,7 +22,7 @@ Existing Solutions Fail Because:
 	•	Generic chatbots with no market intuition
 
 3. ✅ Solution Overview
-ChartSense AI:
+Chartered AI:
 	•	Accepts a chart screenshot
 	•	Interprets visual market structure
 	•	Explains:
@@ -45,7 +45,7 @@ Secondary Users
 5. 🧠 Core Use Case Flow
 User Journey
 	•	User takes a screenshot from TradingView
-	•	Pastes or uploads it to ChartSense AI
+	•	Pastes or uploads it to Chartered AI
 	•	AI analyzes the chart
 	•	AI outputs:
 	•	Market state

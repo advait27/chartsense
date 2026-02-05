@@ -1,10 +1,10 @@
 """
-ChartSense Main Application
+Chartered Main Application
 
 Simple end-to-end chart analysis application.
 For MVP: Direct function calls without FastAPI.
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 
@@ -28,9 +28,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class ChartSenseApp:
+class CharteredApp:
     """
-    Main ChartSense application.
+    Main Chartered application.
     
     Provides simple interface for chart analysis.
     """
@@ -38,7 +38,7 @@ class ChartSenseApp:
     def __init__(self):
         """Initialize application"""
         self.orchestrator = ChartAnalysisOrchestrator(strict_safety=True)
-        logger.info("ChartSense application initialized")
+        logger.info("Chartered application initialized")
     
     def analyze_chart_from_file(
         self,
@@ -146,7 +146,7 @@ class ChartSenseApp:
 def main():
     """Main entry point for CLI usage"""
     print("="*60)
-    print("ChartSense - AI-Powered Chart Analysis")
+    print("Chartered - AI-Powered Chart Analysis")
     print("="*60)
     
     # Check arguments
@@ -164,7 +164,7 @@ def main():
     asset = sys.argv[3] if len(sys.argv) > 3 else None
     
     # Initialize app
-    app = ChartSenseApp()
+    app = CharteredApp()
     
     # Analyze
     print(f"\n📊 Analyzing: {Path(image_path).name}")

@@ -3,7 +3,7 @@ Hugging Face Inference Client (Updated for 2026)
 
 Uses the new router.huggingface.co API with chat completions.
 
-Author: ChartSense
+Author: Chartered
 Version: 2.0.0
 """
 

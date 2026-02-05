@@ -4,7 +4,7 @@ Response Builder and Parser
 This module converts raw AI model outputs into structured, dashboard-ready format.
 Handles parsing, cleaning, and formatting for frontend consumption.
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 

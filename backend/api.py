@@ -1,7 +1,7 @@
 """
-FastAPI Backend for ChartSense
+FastAPI Backend for Chartered
 
-REST API wrapper for the ChartSense analysis system.
+REST API wrapper for the Chartered analysis system.
 Provides endpoints for the React frontend.
 """
 
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="ChartSense API",
+    title="Chartered API",
     description="AI-Powered Trading Chart Analysis",
     version="1.0.0"
 )
@@ -80,7 +80,7 @@ async def root():
     """Health check endpoint"""
     return {
         "status": "online",
-        "service": "ChartSense API",
+        "service": "Chartered API",
         "version": "1.0.0"
     }
 

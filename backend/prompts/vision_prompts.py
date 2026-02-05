@@ -4,7 +4,7 @@ Prompt Templates for Trading Chart Analysis
 This module contains structured prompt templates for vision and reasoning models.
 Templates are designed to produce consistent, educational, non-predictive analysis.
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 

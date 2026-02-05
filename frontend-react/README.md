@@ -1,4 +1,4 @@
-# ChartSense React Frontend
+# Chartered React Frontend
 
 Modern, dynamic React frontend for AI-powered chart analysis with a professional trading dark theme.
 

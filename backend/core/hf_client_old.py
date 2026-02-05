@@ -11,7 +11,7 @@ Features:
 - Free-tier compatible
 - Support for vision-language models (BLIP-2, LLaVA, etc.)
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 

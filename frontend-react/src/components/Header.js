@@ -12,7 +12,7 @@ const Header = () => {
           </div>
           <div className="logo-text">
             <h1 className="logo-title">
-              ChartSense
+              Chartered
               <Sparkles className="sparkle-icon" size={16} />
             </h1>
             <p className="logo-subtitle">AI-Powered Technical Analysis</p>

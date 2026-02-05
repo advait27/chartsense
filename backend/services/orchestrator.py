@@ -10,7 +10,7 @@ Pipeline Flow:
 4. Response Building (structure output)
 5. Safety Validation (check compliance)
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 

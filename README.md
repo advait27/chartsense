@@ -1,10 +1,10 @@
-# ChartSense 📊
+# Chartered 📊
 
 AI-powered trading chart analysis tool for decision support.
 
 ## Overview
 
-ChartSense analyzes TradingView chart screenshots using AI vision and reasoning models to provide:
+Chartered analyzes TradingView chart screenshots using AI vision and reasoning models to provide:
 - Market structure analysis
 - Momentum assessment
 - Market regime identification
@@ -19,7 +19,7 @@ ChartSense analyzes TradingView chart screenshots using AI vision and reasoning 
 
 ```bash
 # Clone or navigate to project directory
-cd chartsense
+cd chartered
 
 # Create virtual environment
 python -m venv venv
@@ -60,7 +60,7 @@ streamlit run frontend/app.py
 ## Project Structure
 
 ```
-chartsense/
+chartered/
 ├── frontend/           # Streamlit UI
 │   ├── app.py         # Main application
 │   └── config.py      # Frontend config

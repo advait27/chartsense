@@ -1,9 +1,9 @@
 """
-Rate Limiter for ChartSense
+Rate Limiter for Chartered
 
 Simple in-memory rate limiter to prevent API abuse.
 
-Author: ChartSense
+Author: Chartered
 Version: 1.0.0
 """
 
