@@ -14,25 +14,18 @@ Version: 1.0.0
 
 VISION_SYSTEM_PROMPT = """You are a technical chart analysis assistant. Your role is to objectively describe what you see in trading charts without making predictions or recommendations."""
 
-VISION_USER_PROMPT_TEMPLATE = """Analyze this trading chart image and provide a factual, objective description.
+VISION_USER_PROMPT_TEMPLATE = """Analyze this trading chart and provide factual, objective description.
 
 Focus on:
-1. **Chart Type & Timeframe**: Identify candlestick/line chart and timeframe if visible
-2. **Price Structure**: Describe trend direction, swing highs/lows, support/resistance levels
-3. **Technical Indicators**: List all visible indicators (moving averages, RSI, MACD, volume, etc.)
-4. **Visual Patterns**: Describe any chart patterns or formations
-5. **Momentum Signals**: Describe what momentum indicators show (if present)
-
-Rules:
-- Be factual and objective
-- Describe only what is visible
-- Do not predict future prices
-- Do not suggest trades
-- Use neutral language
+1. Chart Type & Timeframe (if visible)
+2. Price Structure - trend, highs/lows, support/resistance levels
+3. Technical Indicators - list all visible (MAs, RSI, MACD, volume, etc.)
+4. Visual Patterns - formations or patterns
+5. Momentum Signals - what indicators show
 
 {context_section}
 
-Provide your analysis in a structured format."""
+Be factual, objective, no predictions or trade suggestions. Use neutral language."""
 
 VISION_CONTEXT_TEMPLATE = """
 Additional Context:
@@ -60,66 +53,38 @@ You must NEVER:
 - Make guarantees about outcomes
 - Recommend trade execution"""
 
-REASONING_USER_PROMPT_TEMPLATE = """Based on the following technical chart description, provide a structured market analysis.
+REASONING_USER_PROMPT_TEMPLATE = """Analyze this chart description and provide structured insights:
 
-## Chart Description
 {vision_output}
 
-## Your Analysis
+## Required Analysis Sections
 
-Provide a clear, structured analysis with these sections:
+**1. Market Structure** - Trend, key levels, patterns (be specific)
 
-### 1. Market Structure Assessment
-Describe the trend, key support/resistance levels, and any notable patterns. Be specific with price levels where visible.
+**2. Momentum** - Indicator interpretation, divergences (if visible)
 
-### 2. Momentum Analysis  
-Interpret available momentum indicators. Note any divergences or confirmations. If indicators aren't visible, state this clearly.
+**3. Regime** - Classify: Trending Bullish/Bearish, Ranging, Breakout, or Indecisive (1-2 sentences)
 
-### 3. Market Regime Classification
-Classify as: Trending Bullish, Trending Bearish, Ranging, Breakout, or Indecisive.
-Explain your classification in 2-3 sentences.
+**4. Strategy Bias** - State Bullish/Bearish/Neutral with confidence (High/Medium/Low) + 2-3 key points
 
-### 4. Strategy Bias
-State your bias (Bullish/Bearish/Neutral) with confidence level (High/Medium/Low).
-Provide 2-3 supporting points.
+**5. Approaches** - List 2-3 suitable strategies (trend-following, mean-reversion, etc.) with brief rationale
 
-### 5. Suitable Approaches
-Suggest 2-3 general trading approaches (e.g., trend-following, mean-reversion, wait-and-see).
-Briefly explain why each may be suitable.
+**6. Invalidation** - Specific levels/conditions that would invalidate bullish/bearish scenarios
 
-### 6. Invalidation Conditions
-- Bullish scenario would be invalidated if: [specific levels/conditions]
-- Bearish scenario would be invalidated if: [specific levels/conditions]
-- Key decision levels: [specific price levels]
+**7. Trading Signals**
+- Signal: BUY/SELL/WAIT/NO CLEAR SIGNAL
+- Entry: [price zone]
+- Stop: [price + pip distance if calculable]
+- TP1: [target + pip distance]
+- TP2: [optional second target]
+- R:R: [ratio]
+- Position: [sizing guidance]
+- Timeframe: [best TF for setup]
+- Confidence: High (70-85%), Medium (50-70%), Low (<50%)
 
-### 7. Trading Signals
-Based on your analysis, provide specific trading recommendations:
-- **Signal Type**: BUY / SELL / WAIT / NO CLEAR SIGNAL
-- **Entry Level**: [specific price zone or "See key levels above"]
-- **Stop Loss**: [specific price level with pip distance if calculable, e.g., "1.0800 (50 pips)"]
-- **Take Profit 1**: [first target price with pip distance]
-- **Take Profit 2**: [optional second target] (if applicable)
-- **Risk-Reward Ratio**: [e.g., "1:2" or "Estimated 1:2.5"]
-- **Position Sizing**: [e.g., "Risk 1-2% of capital" or specific guidance]
-- **Timeframe Context**: [best timeframe for this setup]
-- **Confidence Score**: [High (70-85%), Medium (50-70%), Low (<50%)]
+**8. Risks** - Key uncertainties, conflicting signals, what to monitor
 
-### 8. Risk Considerations
-- Highlight potential risks or uncertainties
-- Note any conflicting signals
-- Mention what to monitor
-
-## Output Format
-Use clear headings and bullet points. Be concise but thorough. Provide specific numbers when available.
-
-## Critical Reminders
-- Use probabilistic language ("suggests", "may indicate", "could signal")
-- Provide specific levels but acknowledge they are suggested zones, not guarantees
-- Focus on education and decision-support
-- Acknowledge uncertainty where it exists
-- Trading signals are for educational purposes only
-
-Provide your analysis now:"""
+Be concise, specific, use probabilistic language. Provide numbers when available."""
 
 
 # ============================================================================

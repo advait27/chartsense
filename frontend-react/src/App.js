@@ -34,7 +34,7 @@ function App() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 90000, // 90 seconds
+        timeout: 180000, // 3 minutes for DeepSeek reasoning model
       });
 
       setAnalysisData(response.data);

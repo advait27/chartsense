@@ -40,9 +40,9 @@ REASONING_MODEL_ALTERNATIVES = [
 # ============================================================================
 
 # Timeouts (seconds)
-VISION_TIMEOUT = int(os.getenv("VISION_TIMEOUT", "30"))
-REASONING_TIMEOUT = int(os.getenv("REASONING_TIMEOUT", "120"))
-TOTAL_TIMEOUT = int(os.getenv("TOTAL_TIMEOUT", "150"))
+VISION_TIMEOUT = int(os.getenv("VISION_TIMEOUT", "25"))
+REASONING_TIMEOUT = int(os.getenv("REASONING_TIMEOUT", "90"))
+TOTAL_TIMEOUT = int(os.getenv("TOTAL_TIMEOUT", "120"))
 
 # Retry Configuration
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", "2"))

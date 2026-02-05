@@ -36,8 +36,9 @@ class ImageProcessor:
     MAX_HEIGHT = 3000
     
     # Target dimensions for AI models (maintains aspect ratio)
-    TARGET_WIDTH = 1024
-    TARGET_HEIGHT = 768
+    # Optimized for speed while maintaining quality
+    TARGET_WIDTH = 896
+    TARGET_HEIGHT = 672
     
     # Cropping margins (percentage of image to remove from edges)
     # These are conservative estimates for TradingView UI elements
