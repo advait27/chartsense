@@ -155,16 +155,16 @@ class ResponseParser:
     Handles missing sections gracefully and cleans verbose language.
     """
     
-    # Section headers to look for
+    # Section headers to look for - more flexible patterns
     SECTION_PATTERNS = {
-        'market_structure': r'(?:###?\s*)?(?:1\.?\s*)?Market Structure(?:\s+Assessment)?',
-        'momentum': r'(?:###?\s*)?(?:2\.?\s*)?Momentum(?:\s+Analysis)?',
-        'regime': r'(?:###?\s*)?(?:3\.?\s*)?Market Regime(?:\s+Classification)?',
-        'strategy_bias': r'(?:###?\s*)?(?:4\.?\s*)?Strategy Bias',
-        'approaches': r'(?:###?\s*)?(?:5\.?\s*)?Suitable Approaches?',
-        'invalidation': r'(?:###?\s*)?(?:6\.?\s*)?Invalidation(?:\s+Conditions)?',
-        'trading_signals': r'(?:###?\s*)?(?:7\.?\s*)?Trading Signals?',
-        'risks': r'(?:###?\s*)?(?:8\.?\s*)?Risk(?:\s+Considerations)?',
+        'market_structure': r'(?:###?\s*)?(?:\*\*)?(?:1\.?\s*)?Market Structure(?:\s+Assessment)?(?:\*\*)?',
+        'momentum': r'(?:###?\s*)?(?:\*\*)?(?:2\.?\s*)?Momentum(?:\s+Analysis)?(?:\*\*)?',
+        'regime': r'(?:###?\s*)?(?:\*\*)?(?:3\.?\s*)?(?:Market )?Regime(?:\s+Classification)?(?:\*\*)?',
+        'strategy_bias': r'(?:###?\s*)?(?:\*\*)?(?:4\.?\s*)?Strategy Bias(?:\*\*)?',
+        'approaches': r'(?:###?\s*)?(?:\*\*)?(?:5\.?\s*)?(?:Suitable )?Approaches?(?:\*\*)?',
+        'invalidation': r'(?:###?\s*)?(?:\*\*)?(?:6\.?\s*)?Invalidation(?:\s+Conditions)?(?:\*\*)?',
+        'trading_signals': r'(?:###?\s*)?(?:\*\*)?(?:7\.?\s*)?Trading Signals?(?:\*\*)?',
+        'risks': r'(?:###?\s*)?(?:\*\*)?(?:8\.?\s*)?Risk(?:\s+Considerations)?(?:\*\*)?',
     }
     
     def __init__(self):
@@ -301,28 +301,45 @@ class ResponseParser:
         """Parse momentum analysis section"""
         section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS['momentum'])
         
-        if not section:
+        # If section is empty, try to extract from context
+        if not section or len(section) < 15:
+            # Look for momentum-related content anywhere in text
+            momentum_keywords = ['momentum', 'rsi', 'macd', 'moving average', 'indicator']
+            for keyword in momentum_keywords:
+                if keyword in text.lower():
+                    # Extract surrounding context
+                    pattern = rf'(.{{0,200}}{keyword}.{{0,200}})'
+                    matches = re.finditer(pattern, text, re.IGNORECASE | re.DOTALL)
+                    sections = [m.group(1).strip() for m in matches]
+                    if sections:
+                        section = ' '.join(sections[:2])
+                        break
+        
+        if not section or len(section) < 10:
             return MomentumAnalysis(
-                assessment="Not available",
-                indicators=["Not specified"],
+                assessment="Analysis details in market structure section",
+                indicators=["Refer to chart description"],
                 divergences=[],
                 strength="Mixed"
             )
         
         # Clean the section
-        section = re.sub(r'\n•\s+', '\n', section)
+        section = re.sub(r'\n•\s+', ' ', section)
         
         # Determine strength from keywords
         strength = "Mixed"
-        if "strong" in section.lower() and "bearish" in section.lower():
+        section_lower = section.lower()
+        if "strong" in section_lower and "bearish" in section_lower:
             strength = "Strong Bearish"
-        elif "strong" in section.lower() and "bullish" in section.lower():
+        elif "strong" in section_lower and "bullish" in section_lower:
             strength = "Strong Bullish"
-        elif "weak" in section.lower():
-            strength = "Weak"
+        elif "weak" in section_lower and "bearish" in section_lower:
+            strength = "Weak Bearish"
+        elif "weak" in section_lower and "bullish" in section_lower:
+            strength = "Weak Bullish"
         
         return MomentumAnalysis(
-            assessment=section.strip(),
+            assessment=section[:500].strip(),
             indicators=["See description above"],
             divergences=[],
             strength=strength
@@ -332,32 +349,54 @@ class ResponseParser:
         """Parse market regime section"""
         section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS['regime'])
         
-        if not section:
+        # Enhanced fallback - look for regime keywords anywhere
+        if not section or len(section) < 10:
+            regime_keywords = ['trending', 'ranging', 'breakout', 'indecisive', 'consolidat']
+            for keyword in regime_keywords:
+                if keyword in text.lower():
+                    pattern = rf'(.{{0,150}}{keyword}.{{0,150}})'
+                    match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+                    if match:
+                        section = match.group(1).strip()
+                        break
+        
+        if not section or len(section) < 10:
             return RegimeClassification(
                 regime="Indecisive",
-                reasoning="Not available",
-                volatility="Moderate"
+                reasoning="See market structure analysis for details",
+                volatility="Unknown"
             )
         
         # Clean the section
-        section = re.sub(r'\n•\s+', '\n', section)
+        section = re.sub(r'\n•\s+', ' ', section)
         
-        # Extract regime classification
+        # Extract regime classification with better matching
         regime = "Indecisive"
-        for keyword in ["Trending Bearish", "Trending Bullish", "Ranging", "Breakout", "Indecisive"]:
-            if keyword.lower() in section.lower():
-                regime = keyword
-                break
+        section_lower = section.lower()
+        if "trending" in section_lower and "bearish" in section_lower:
+            regime = "Trending Bearish"
+        elif "trending" in section_lower and "bullish" in section_lower:
+            regime = "Trending Bullish"
+        elif "trending" in section_lower:
+            regime = "Trending"
+        elif "ranging" in section_lower or "range" in section_lower:
+            regime = "Ranging"
+        elif "breakout" in section_lower:
+            regime = "Breakout"
         
         # Extract volatility if mentioned
-        volatility = "Moderate"
-        volatility_match = re.search(r'volatility.*?(high|low|moderate)', section, re.IGNORECASE)
-        if volatility_match:
-            volatility = volatility_match.group(1).capitalize()
+        volatility = "Unknown"
+        if "volatility" in section_lower:
+            if "high" in section_lower:
+                volatility = "High"
+            elif "low" in section_lower:
+                volatility = "Low"
+            elif "moderate" in section_lower:
+                volatility = "Moderate"
         
         return RegimeClassification(
             regime=regime,
-            reasoning=section.strip(),
+            reasoning=section[:400].strip(),
             volatility=volatility
         )
     
@@ -406,121 +445,214 @@ class ResponseParser:
         approaches = []
         recommended = None
         
-        # Look for approach patterns
-        approach_patterns = [
-            r'(?:##\s*)?([A-Z]\.)\s*(.+?)\s+Approach',
-            r'[-•]\s*\*\*(.+?)\*\*'
-        ]
+        # If no section found, extract from general text
+        if not section or len(section) < 15:
+            # Look for approach-related keywords
+            approach_keywords = ['trend-following', 'mean-reversion', 'breakout', 'range trading', 'wait-and-see']
+            for keyword in approach_keywords:
+                if keyword.lower() in text.lower():
+                    approaches.append({
+                        "name": keyword.title(),
+                        "rationale": "Mentioned in analysis"
+                    })
+            
+            if approaches:
+                return SuitableApproaches(approaches=approaches, recommended=None)
         
-        for pattern in approach_patterns:
-            matches = re.finditer(pattern, section, re.MULTILINE)
-            for match in matches:
-                name = match.group(1) if len(match.groups()) > 1 else match.group(1)
-                # Extract rationale (next few lines)
-                start = match.end()
-                end = min(start + 200, len(section))
-                rationale_text = section[start:end]
-                rationale = self._extract_field(rationale_text, r'(?:Rationale|Suitable if):?\s*(.+?)(?:\n|$)')
+        # Try to extract structured approaches
+        if section:
+            # Look for numbered or bulleted approaches
+            approach_patterns = [
+                r'(?:[-•\d]+\.?\s*)([A-Z][a-z\-]+(?:\s+[A-Z][a-z\-]+)*)',
+                r'(?:[-•]\s*)\*\*(.+?)\*\*',
+            ]
+            
+            for pattern in approach_patterns:
+                matches = re.finditer(pattern, section)
+                for match in matches:
+                    name = match.group(1).strip()
+                    if len(name) > 3 and len(name) < 50:  # Reasonable length
+                        # Extract rationale from following text
+                        start = match.end()
+                        end = min(start + 150, len(section))
+                        rationale_text = section[start:end].split('\n')[0]
+                        
+                        approaches.append({
+                            "name": name,
+                            "rationale": rationale_text.strip() if rationale_text else "See analysis"
+                        })
                 
-                approaches.append({
-                    "name": name.strip(),
-                    "rationale": rationale or "See details"
-                })
-                
-                # Check if recommended
-                if "recommended" in section[max(0, start-50):start+50].lower():
-                    recommended = name.strip()
+                if approaches:
+                    break
+        
+        # Fallback: return default approaches based on strategy bias
+        if not approaches:
+            if "bullish" in text.lower():
+                approaches = [
+                    {"name": "Trend-following", "rationale": "Aligned with bullish bias"},
+                    {"name": "Breakout trading", "rationale": "Look for continuation patterns"}
+                ]
+            elif "bearish" in text.lower():
+                approaches = [
+                    {"name": "Trend-following", "rationale": "Aligned with bearish bias"},
+                    {"name": "Short selling", "rationale": "Consider downside opportunities"}
+                ]
+            else:
+                approaches = [
+                    {"name": "Wait-and-see", "rationale": "Await clearer signals"},
+                    {"name": "Range trading", "rationale": "Trade within defined levels"}
+                ]
         
         return SuitableApproaches(
-            approaches=approaches if approaches else [{"name": "Wait-and-see", "rationale": "Default approach"}],
-            recommended=recommended
+            approaches=approaches[:3],
+            recommended=approaches[0]["name"] if approaches else None
         )
     
     def _parse_invalidation(self, text: str) -> InvalidationConditions:
         """Parse invalidation conditions section"""
         section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS['invalidation'])
         
-        if not section:
-            return InvalidationConditions(
-                bullish_invalidation=["Not specified"],
-                bearish_invalidation=["Not specified"],
-                key_levels=["Not specified"]
-            )
-        
-        # Extract bullish invalidation - look for "Bullish" line
+        # Extract bullish invalidation
         bullish_invalidation = []
-        bullish_match = re.search(r'bullish.*?(?:invalidated|scenario).*?if:?\s*(.+?)(?=\n-|\nbearish|key|$)', section, re.IGNORECASE | re.DOTALL)
-        if bullish_match:
-            bullish_text = bullish_match.group(1).strip()
-            bullish_invalidation = [bullish_text] if bullish_text else []
+        bullish_patterns = [
+            r'bullish.*?(?:invalidated|invalid|scenario).*?(?:if|:)\s*(.+?)(?=\n[\-•]|\nbear|$)',
+            r'(?:if|when)\s+price\s+(?:breaks?|falls?|closes?)\s+below\s+(.+?)(?=\n|,|$)',
+        ]
+        
+        for pattern in bullish_patterns:
+            match = re.search(pattern, section or text, re.IGNORECASE | re.DOTALL)
+            if match:
+                condition = match.group(1).strip()
+                if condition and len(condition) > 5:
+                    bullish_invalidation.append(condition[:200])
+                    break
         
         # Extract bearish invalidation
         bearish_invalidation = []
-        bearish_match = re.search(r'bearish.*?(?:invalidated|scenario).*?if:?\s*(.+?)(?=\n-|\nkey|$)', section, re.IGNORECASE | re.DOTALL)
-        if bearish_match:
-            bearish_text = bearish_match.group(1).strip()
-            bearish_invalidation = [bearish_text] if bearish_text else []
+        bearish_patterns = [
+            r'bearish.*?(?:invalidated|invalid|scenario).*?(?:if|:)\s*(.+?)(?=\n[\-•]|\nkey|$)',
+            r'(?:if|when)\s+price\s+(?:breaks?|rises?|closes?)\s+above\s+(.+?)(?=\n|,|$)',
+        ]
         
-        # Extract key decision levels
+        for pattern in bearish_patterns:
+            match = re.search(pattern, section or text, re.IGNORECASE | re.DOTALL)
+            if match:
+                condition = match.group(1).strip()
+                if condition and len(condition) > 5:
+                    bearish_invalidation.append(condition[:200])
+                    break
+        
+        # Extract key levels
         key_levels = []
-        key_match = re.search(r'key.*?(?:decision|level).*?:?\s*(.+?)$', section, re.IGNORECASE | re.DOTALL)
-        if key_match:
-            key_text = key_match.group(1).strip()
-            key_levels = [key_text] if key_text else []
+        key_patterns = [
+            r'key.*?(?:decision|level|price).*?:?\s*(.+?)(?=\n|$)',
+            r'(?:watch|monitor).*?level.*?:?\s*(.+?)(?=\n|$)',
+        ]
+        
+        for pattern in key_patterns:
+            match = re.search(pattern, section or text, re.IGNORECASE)
+            if match:
+                levels = match.group(1).strip()
+                if levels and len(levels) > 5:
+                    key_levels.append(levels[:150])
+                    break
+        
+        # Smart fallbacks based on strategy bias
+        if not bullish_invalidation:
+            if "support" in text.lower():
+                support_match = re.search(r'support.*?(?:at|near|around)\s+([\d,.]+)', text, re.IGNORECASE)
+                if support_match:
+                    bullish_invalidation = [f"Break below support at {support_match.group(1)}"]
+        
+        if not bearish_invalidation:
+            if "resistance" in text.lower():
+                resistance_match = re.search(r'resistance.*?(?:at|near|around)\s+([\d,.]+)', text, re.IGNORECASE)
+                if resistance_match:
+                    bearish_invalidation = [f"Break above resistance at {resistance_match.group(1)}"]
         
         return InvalidationConditions(
-            bullish_invalidation=bullish_invalidation if bullish_invalidation else ["Not specified"],
-            bearish_invalidation=bearish_invalidation if bearish_invalidation else ["Not specified"],
-            key_levels=key_levels if key_levels else ["Not specified"]
+            bullish_invalidation=bullish_invalidation if bullish_invalidation else ["See key levels for invalidation zones"],
+            bearish_invalidation=bearish_invalidation if bearish_invalidation else ["See key levels for invalidation zones"],
+            key_levels=key_levels if key_levels else ["Refer to market structure section"]
         )
     
     def _parse_trading_signals(self, text: str) -> TradingSignals:
         """Parse trading signals section"""
-        section = self._extract_section_by_pattern(text, [
-            r'(?:###|##)?\s*7\.\s*Trading Signals?.*?(?=###|##|\n\n[A-Z]|\Z)',
-            r'(?:Trading Signal|Signal Recommendation|Trade Setup).*?(?=###|##|\n\n[A-Z]|\Z)'
-        ])
+        section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS.get('signals', r'(?:\*\*)?(?:7\.?\s*)?Trading Signals?(?:\*\*)?'))
         
-        if not section:
-            # Generate signals based on strategy bias
+        # Fallback to searching for signal keywords if no section found
+        if not section or len(section) < 20:
+            signal_keywords = ['entry', 'stop loss', 'target', 'buy', 'sell']
+            for keyword in signal_keywords:
+                if keyword in text.lower():
+                    pattern = rf'(.{{0,300}}{keyword}.{{0,300}})'
+                    match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+                    if match:
+                        section = match.group(1).strip()
+                        break
+        
+        if not section or len(section) < 20:
             return self._generate_signals_from_bias(text)
         
-        # Extract signal type
+        # Extract signal type with more patterns
         signal_type = "NO CLEAR SIGNAL"
-        for sig in ["BUY", "SELL", "WAIT", "NO CLEAR SIGNAL"]:
-            if sig.lower() in section.lower():
-                signal_type = sig
+        section_lower = section.lower()
+        if any(word in section_lower for word in ["buy", "long", "bullish bias"]):
+            signal_type = "BUY"
+        elif any(word in section_lower for word in ["sell", "short", "bearish bias"]):
+            signal_type = "SELL"
+        elif "wait" in section_lower or "no clear signal" in section_lower:
+            signal_type = "WAIT"
+        
+        # Extract entry level with multiple patterns
+        entry_patterns = [
+            r'(?:Entry|Entry Level|Entry Zone|Entry Point):?\s*(.+?)(?:\n|,|;|$)',
+            r'(?:at|near|around)\s+([\d,.]+)',
+        ]
+        entry_level = None
+        for pattern in entry_patterns:
+            entry_level = self._extract_field(section, pattern)
+            if entry_level and len(entry_level) > 3:
                 break
         
-        # Extract entry level
-        entry_level = self._extract_field(section, r'(?:Entry|Entry Level|Entry Zone):?\s*(.+?)(?:\n|$)')
-        
         # Extract stop loss
-        stop_loss = self._extract_field(section, r'(?:Stop Loss|SL):?\s*(.+?)(?:\n|$)')
+        stop_patterns = [
+            r'(?:Stop Loss|Stop|SL):?\s*(.+?)(?:\n|,|;|$)',
+            r'(?:below|above)\s+([\d,.]+)',
+        ]
+        stop_loss = None
+        for pattern in stop_patterns:
+            stop_loss = self._extract_field(section, pattern)
+            if stop_loss and len(stop_loss) > 3:
+                break
         
-        # Extract take profit
-        take_profit_1 = self._extract_field(section, r'(?:Take Profit|TP|Target)\s*(?:1|One)?:?\s*(.+?)(?:\n|$)')
-        take_profit_2 = self._extract_field(section, r'(?:Take Profit|TP|Target)\s*(?:2|Two):?\s*(.+?)(?:\n|$)')
+        # Extract take profit targets
+        tp_patterns = [
+            r'(?:Take Profit|TP|Target)\s*(?:1|One)?:?\s*(.+?)(?:\n|,|;|$)',
+            r'(?:Take Profit|TP|Target)\s*(?:2|Two):?\s*(.+?)(?:\n|,|;|$)',
+        ]
+        take_profit_1 = self._extract_field(section, tp_patterns[0])
+        take_profit_2 = self._extract_field(section, tp_patterns[1])
         
         # Extract risk-reward
-        risk_reward = self._extract_field(section, r'(?:Risk[- ]Reward|R:R|RR):?\s*(.+?)(?:\n|$)')
+        risk_reward = self._extract_field(section, r'(?:Risk[- ]Reward|R:R|RR):?\s*(.+?)(?:\n|,|;|$)')
         
         # Extract position sizing
         position_sizing = self._extract_field(section, r'(?:Position Siz|Risk):?\s*(.+?)(?:\n|$)')
         
-        # Extract timeframe context
-        timeframe_context = self._extract_field(section, r'(?:Timeframe|Best for):?\s*(.+?)(?:\n|$)')
+        # Extract timeframe
+        timeframe_context = self._extract_field(section, r'(?:Timeframe|Time Frame|Best for):?\s*(.+?)(?:\n|$)')
         
         # Extract confidence
         confidence = self._extract_field(section, r'(?:Confidence|Probability):?\s*(.+?)(?:\n|$)')
         
         return TradingSignals(
             signal_type=signal_type,
-            entry_level=entry_level,
-            stop_loss=stop_loss,
-            take_profit_1=take_profit_1,
+            entry_level=entry_level or "See market structure section",
+            stop_loss=stop_loss or "See invalidation conditions",
+            take_profit_1=take_profit_1 or "See key resistance/support levels",
             take_profit_2=take_profit_2,
-            risk_reward_ratio=risk_reward,
+            risk_reward_ratio=risk_reward or "Monitor 1:2 minimum",
             position_sizing=position_sizing or "Risk 1-2% of capital per trade",
             timeframe_context=timeframe_context,
             confidence_score=confidence
@@ -553,31 +685,65 @@ class ResponseParser:
     
     def _parse_risks(self, text: str) -> RiskConsiderations:
         """Parse risk considerations section"""
-        section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS['risks'])
+        section = self._extract_section_by_pattern(text, self.SECTION_PATTERNS.get('risks', r'(?:\*\*)?(?:8\.?\s*)?Risk Considerations?(?:\*\*)?'))
         
-        # Extract risks
-        risks = self._extract_list_items(section, patterns=[
-            r'(?:Risk|Potential Risk):?\s*(.+?)(?:\n|$)'
-        ])
+        # Fallback: look anywhere in text for risk-related content
+        if not section or len(section) < 20:
+            risk_keywords = ['risk', 'caution', 'uncertainty', 'monitor']
+            for keyword in risk_keywords:
+                if keyword in text.lower():
+                    pattern = rf'(.{{0,400}}{keyword}.{{0,400}})'
+                    match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+                    if match:
+                        section = match.group(1).strip()
+                        break
+        
+        # Extract risks with improved patterns
+        risks = []
+        if section:
+            # Try specific risk patterns first
+            risk_patterns = [
+                r'[-•*]\s*(.+?)(?:\n|$)',  # Bullet points
+                r'(?:Risk|Caution|Warning):?\s*(.+?)(?:\n|$)',
+                r'(?:may|could|might)\s+(.+?)(?:\n|$)',  # Uncertainty language
+            ]
+            risks = self._extract_list_items(section, patterns=risk_patterns)
         
         # Extract conflicting signals
-        conflicting = self._extract_list_items(section, patterns=[
-            r'(?:Conflict|Conflicting):?\s*(.+?)(?:\n|$)'
-        ])
+        conflicting = []
+        if section:
+            conflicting_patterns = [
+                r'(?:Conflict|Conflicting|Divergence):?\s*(.+?)(?:\n|$)',
+                r'(?:however|but|although)\s+(.+?)(?:\n|$)',
+            ]
+            conflicting = self._extract_list_items(section, patterns=conflicting_patterns)
         
         # Extract monitoring points
-        monitoring = self._extract_list_items(section, patterns=[
-            r'(?:Monitor|Watch|What to monitor):?\s*(.+?)(?:\n|$)'
-        ])
+        monitoring = []
+        if section:
+            monitoring_patterns = [
+                r'(?:Monitor|Watch|Track|Check):?\s*(.+?)(?:\n|$)',
+                r'(?:key level|important level):?\s*(.+?)(?:\n|$)',
+            ]
+            monitoring = self._extract_list_items(section, patterns=monitoring_patterns)
         
         # Extract uncertainty note
-        uncertainty = self._extract_field(section, r'(?:Uncertainty|Acknowledgment):?\s*(.+?)(?:\n|$)')
+        uncertainty = None
+        if section:
+            uncertainty = self._extract_field(section, r'(?:Uncertainty|Acknowledgment|Disclaimer):?\s*(.+?)(?:\n\n|$)')
+        
+        # Smart defaults
+        if not risks:
+            risks = ["Market volatility risk", "Timing risk", "External factors may impact outcome"]
+        
+        if not monitoring:
+            monitoring = ["Price action at key levels", "Volume confirmation", "Overall market conditions"]
         
         return RiskConsiderations(
-            risks=risks[:5] if risks else ["Standard market risks apply"],
-            conflicting_signals=conflicting[:3] if conflicting else [],
-            monitoring_points=monitoring[:5] if monitoring else ["Price action", "Volume"],
-            uncertainty_note=uncertainty or "Markets are inherently uncertain"
+            risks=risks[:5],
+            conflicting_signals=conflicting[:3],
+            monitoring_points=monitoring[:5],
+            uncertainty_note=uncertainty or "Markets are inherently uncertain. This analysis is for educational purposes only."
         )
     
     # Helper methods
@@ -589,14 +755,25 @@ class ResponseParser:
         return match.group(1).strip() if match else ""
     
     def _extract_section_by_pattern(self, text: str, pattern: str) -> str:
-        """Extract section by regex pattern - looks for next ### header or end of text"""
-        # Match section header and capture until next ### header
-        match = re.search(pattern + r':?\s*\n(.+?)(?=\n###\s+\d+\.|$)', text, re.DOTALL | re.IGNORECASE)
-        if match:
-            return match.group(1).strip()
-        # Fallback: try simpler pattern
-        match = re.search(pattern + r':?\s*(.+?)(?=\n###|\Z)', text, re.DOTALL | re.IGNORECASE)
-        return match.group(1).strip() if match else ""
+        """Extract section by regex pattern - more flexible matching"""
+        # Try multiple pattern variations
+        patterns_to_try = [
+            # Match with markdown headers or numbered sections
+            pattern + r':?\s*\n+(.+?)(?=\n+(?:\*\*)?(?:\d+\.|\#\#)|\Z)',
+            # Match inline without newline requirement
+            pattern + r':?\s*(.+?)(?=\n+(?:\*\*)?(?:\d+\.|\#\#)|\Z)',
+            # Simpler fallback
+            pattern + r'(.+?)(?=\n\n|\Z)',
+        ]
+        
+        for p in patterns_to_try:
+            match = re.search(p, text, re.DOTALL | re.IGNORECASE)
+            if match:
+                content = match.group(1).strip()
+                if content and len(content) > 10:  # Valid content threshold
+                    return content
+        
+        return ""
     
     def _extract_subsection(self, text: str, pattern: str) -> str:
         """Extract subsection within a section"""
