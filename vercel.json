@@ -1,39 +1,9 @@
 {
   "version": 2,
   "name": "chartsense",
-  "builds": [
-    {
-      "src": "frontend-react/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    },
-    {
-      "src": "api/**/*.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend-react/$1"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/frontend-react/$1"
-    }
-  ],
+  "buildCommand": "cd frontend-react && npm ci && npm run build",
+  "outputDirectory": "frontend-react/build",
+  "installCommand": "npm install --prefix frontend-react",
   "headers": [
     {
       "source": "/api/(.*)",
@@ -103,3 +73,10 @@
     }
   }
 }
+REACT_APP_API_URL": "/api"
+  },
+  "functions": {
+    "api/**/*.py": {
+      "runtime": "python3.9",
+      "memory": 1024,
+      "maxDuration": 6
