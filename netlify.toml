@@ -1,6 +1,7 @@
 [build]
-  command = "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt"
-  publish = "frontend-react/build"
+  base = "frontend-react"
+  command = "npm ci && npm run build"
+  publish = "build"
 
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "HF_API_KEY,BACKEND_URL,LOG_LEVEL,VISION_MODEL,REASONING_MODEL,VISION_TIMEOUT,REASONING_TIMEOUT,TOTAL_TIMEOUT"
