@@ -35,14 +35,6 @@
   
   # Function runtime
   node_bundler = "esbuild"
-  
-  # Extend function timeout for AI processing
-  # Default is 10s, we need more for AI models
-  # Note: Background functions can run up to 15min on Pro plans
-  
-[[functions.analyze]]
-  # Main chart analysis function
-  timeout = 120  # 2 minutes for AI processing
 
 # =============================================================================
 # REDIRECTS & ROUTING
