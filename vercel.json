@@ -1,9 +1,10 @@
 {
-  "version": 2,
-  "name": "chartsense",
-  "buildCommand": "cd frontend-react && npm ci && npm run build",
-  "outputDirectory": "frontend-react/build",
-  "installCommand": "npm install --prefix frontend-react",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
@@ -57,26 +58,11 @@
       ]
     }
   ],
-  "env": {
-    "PYTHON_VERSION": "3.11",
-    "NODE_VERSION": "18"
-  },
-  "build": {
-    "env": {
-      "REACT_APP_API_URL": "/api"
-    }
-  },
   "functions": {
-    "api/**/*.py": {
+    "api/*.py": {
+      "runtime": "python3.9",
       "memory": 1024,
-      "maxDuration": 120
+      "maxDuration": 60
     }
   }
 }
-REACT_APP_API_URL": "/api"
-  },
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.9",
-      "memory": 1024,
-      "maxDuration": 6
