@@ -21,15 +21,39 @@ ChartSense analyzes TradingView chart screenshots using cutting-edge AI vision a
 
 ## 🚀 Quick Start
 
-### Option 1: Production (Netlify - Recommended)
+### Option 1: Production Deployment
 
-See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete production deployment guide.
+Choose your preferred platform:
+
+#### Vercel (Recommended for simplicity)
+See **[DEPLOYMENT_VERCEL.md](DEPLOYMENT_VERCEL.md)** for complete guide.
+
+**Quick Deploy to Vercel**:
+1. Fork this repository
+2. Connect to [Vercel](https://vercel.com)
+3. Add `HF_API_KEY` environment variable
+4. Deploy! 🎉
+
+⚠️ **Note**: AI processing requires Pro plan ($20/month) for 60s timeout.
+
+#### Netlify (Better free tier for AI apps)
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete guide.
 
 **Quick Deploy to Netlify**:
 1. Fork this repository
-2. Connect to Netlify
+2. Connect to [Netlify](https://netlify.com)
 3. Add `HF_API_KEY` environment variable
 4. Deploy! 🎉
+
+✅ **Free tier works** with flexible function timeouts.
+
+**Platform Comparison**:
+| Feature | Vercel | Netlify |
+|---------|--------|---------|
+| Free Tier AI Support | ⚠️ Limited (10s timeout) | ✅ Yes (configurable) |
+| Pro Plan Cost | $20/month | $19/month |
+| Best For | Next.js apps | JAMstack, AI functions |
+| **Recommendation** | Pro plan | ✅ Free tier OK |
 
 ### Option 2: Local Development
 
@@ -76,6 +100,15 @@ chartsense/
 │   │   └── index.js       # Entry point
 │   ├── public/            # Static assets
 │   └── package.json       # Frontend dependencies
+│
+├── api/                   # Vercel serverless functions
+│   ├── analyze.py        # Chart analysis endpoint
+│   └── requirements.txt  # API dependencies
+│
+├── netlify/              # Netlify serverless functions
+│   └── functions/
+│       ├── analyze.py    # Chart analysis endpoint
+│       └── requirements.txt
 │
 ├── backend/               # Python backend
 │   ├── api.py            # FastAPI REST API
@@ -190,10 +223,47 @@ mypy backend/
 
 ## 🚀 Deployment
 
-### Production Deployment (Netlify)
+### Production Deployment
+
+**Choose Your Platform**:
+
+#### 🟢 Netlify (Recommended for Free Tier)
+- ✅ Free tier supports AI functions
+- ✅ Flexible function timeouts (120s)
+- ✅ Simple configuration
+- **Guide**: [DEPLOYMENT.md](DEPLOYMENT.md)
 
 **Quick Deploy**:
-```⚠️ Disclaimer
+```bash
+git push origin main
+# Connect to Netlify → Deploy
+# Add HF_API_KEY in environment variables
+```
+
+#### 🔵 Vercel (Recommended for Simplicity)
+- ⚠️ Pro plan needed for AI ($20/month)
+- ✅ Excellent developer experience
+- ✅ Auto-deploy on push
+- **Guide**: [DEPLOYMENT_VERCEL.md](DEPLOYMENT_VERCEL.md)
+
+**Quick Deploy**:
+```bash
+git push origin main
+# Connect to Vercel → Deploy
+# Add HF_API_KEY in environment variables
+# Upgrade to Pro for 60s timeout
+```
+
+**Platform Comparison**:
+See [DEPLOYMENT_VERCEL.md](DEPLOYMENT_VERCEL.md#comparison-vercel-vs-netlify) for detailed comparison.
+
+**Recommendation**: 
+- **Budget-conscious**: Use Netlify (free tier works)
+- **Simplicity priority**: Use Vercel (requires Pro plan)
+
+---
+
+## ⚠️ Disclaimer
 
 **IMPORTANT: READ BEFORE USING**
 
@@ -390,8 +460,11 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## 📚 Documentation
 
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete production deployment guide
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Netlify deployment guide (recommended for free tier)
+- **[DEPLOYMENT_VERCEL.md](DEPLOYMENT_VERCEL.md)** - Vercel deployment guide (requires Pro plan)
+- **[QUICKSTART.md](QUICKSTART.md)** - 10-minute deployment walkthrough (Netlify)
 - **[SECURITY.md](SECURITY.md)** - Security checklist and best practices
+- **[CHECKLIST.md](CHECKLIST.md)** - Pre-deployment verification
 - **[backend/core/README_*.md](backend/core/)** - Component documentation
 - **[PRD.txt](PRD.txt)** - Product requirements
 
