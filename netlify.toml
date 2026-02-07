@@ -2,6 +2,9 @@
   command = "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt"
   publish = "frontend-react/build"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "HF_API_KEY,BACKEND_URL,LOG_LEVEL,VISION_MODEL,REASONING_MODEL,VISION_TIMEOUT,REASONING_TIMEOUT,TOTAL_TIMEOUT"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
