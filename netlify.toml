@@ -1,10 +1,11 @@
 [build]
   base = "frontend-react"
-  command = "npm install && npm run build"
+  command = "npm ci && npm run build"
   publish = "build"
 
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "HF_API_KEY,BACKEND_URL,LOG_LEVEL,VISION_MODEL,REASONING_MODEL,VISION_TIMEOUT,REASONING_TIMEOUT,TOTAL_TIMEOUT"
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/api/*"
