@@ -8,6 +8,11 @@ import ErrorMessage from './components/ErrorMessage';
 import ChatInterface from './components/ChatInterface';
 import axios from 'axios';
 
+// Configuration from environment variables
+const API_URL = process.env.REACT_APP_API_URL || '/api';
+const ENABLE_CHAT = process.env.REACT_APP_ENABLE_CHAT !== 'false';
+const APP_VERSION = process.env.REACT_APP_VERSION || '1.0.0';
+
 function App() {
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -28,9 +33,11 @@ function App() {
     formData.append('chart', file);
 
     try {
-      // Since backend is Streamlit, we'll simulate the API call
-      // In production, you'd need to convert backend to FastAPI
-      const response = await axios.post('/api/analyze', formData, {
+      // Use environment-based API URL
+      const apiEndpoint = `${API_URL}/analyze`;
+      console.log('Calling API:', apiEndpoint);
+      
+      const response = await axios.post(apiEndpoint, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -38,16 +45,31 @@ function App() {
       });
 
       setAnalysisData(response.data);
+      setError(null);
     } catch (err) {
       console.error('Analysis error:', err);
-      setError(
-        err.response?.data?.message || 
-        err.message || 
-        'Failed to analyze chart. Please try again.'
-      );
       
-      // For demo purposes, set mock data
-      setAnalysisData(getMockAnalysisData());
+      let errorMessage = 'Failed to analyze chart. Please try again.';
+      
+      if (err.response) {
+        // Server responded with error
+        errorMessage = err.response.data?.message || err.response.data?.error || errorMessage;
+      } else if (err.request) {
+        // Request made but no response
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        // Something else went wrong
+        errorMessage = err.message || errorMessage;
+      }
+      
+      setError(errorMessage);
+      
+      // Only use mock data in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Using mock data for development');
+        setAnalysisData(getMockAnalysisData());
+        setError(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -141,7 +163,7 @@ function App() {
                 imagePreview={uploadedImage}
               />
               
-              <ChatInterface analysisData={analysisData} />
+              {ENABLE_CHAT && <ChatInterface analysisData={analysisData} />}
             </>
           )}
         </div>
@@ -150,6 +172,7 @@ function App() {
       <footer className="footer">
         <p>Powered by AI • {analysisData?.metadata?.vision_model || 'Qwen Vision'} & {analysisData?.metadata?.reasoning_model || 'Llama Reasoning'}</p>
         <p className="disclaimer">⚠️ Educational purposes only. Not financial advice.</p>
+        <p className="version">v{APP_VERSION}</p>
       </footer>
     </div>
   );

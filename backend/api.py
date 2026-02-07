@@ -7,11 +7,13 @@ Provides endpoints for the React frontend.
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 import io
 import sys
+import os
 from pathlib import Path
 from PIL import Image
 import logging
@@ -31,21 +33,48 @@ from backend.config import VISION_MODEL_ID, REASONING_MODEL_ID, HF_API_KEY
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Get environment
+ENV = os.getenv("ENV", "development")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
+
+# Add production origins if in production
+if ENV == "production":
+    # Add your Netlify domain here
+    production_domains = os.getenv("PRODUCTION_DOMAINS", "").split(",")
+    ALLOWED_ORIGINS.extend([domain.strip() for domain in production_domains if domain.strip()])
+
 # Initialize FastAPI app
 app = FastAPI(
-    title="Chartered API",
+    title="ChartSense API",
     description="AI-Powered Trading Chart Analysis",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/api/docs" if ENV == "development" else None,
+    redoc_url="/api/redoc" if ENV == "development" else None,
 )
 
 # Configure CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=ALLOWED_ORIGINS if ENV != "production" else ["*"],  # In production, more restrictive
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
+    max_age=3600,
 )
+
+# Add security headers middleware
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    """Add security headers to all responses"""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 # Initialize orchestrator
 orchestrator = ChartAnalysisOrchestrator(strict_safety=False)
