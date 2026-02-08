@@ -173,10 +173,10 @@ Error: Cannot find module 'react-scripts'
 ```
 Error: Function timeout after 10 seconds
 ```
-**Solution**: AI processing takes time. Function timeout is set to 120s in `netlify.toml`. If still timing out:
-- Check Netlify plan limits
-- Consider using background functions
-- Optimize model parameters
+**Solution**: On the free tier, Netlify limits function duration (e.g. 26s). Analysis can take 30–60s. Options:
+- Set `[functions."analyze"] timeout = 26` in `netlify.toml` (max on free tier)
+- Upgrade to Netlify Pro for longer timeouts if needed
+- Optimize model parameters or use a faster model for MVP
 
 #### 3. CORS Errors
 ```

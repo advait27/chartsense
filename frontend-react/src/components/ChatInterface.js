@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, Trash2, Loader } from 'lucide-react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || '/api';
+
 const ChatInterface = ({ analysisData }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -45,7 +47,7 @@ const ChatInterface = ({ analysisData }) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('/api/chat', {
+      const response = await axios.post(`${API_URL}/chat`, {
         session_id: sessionId,
         message: inputMessage,
         analysis_context: analysisData
@@ -82,7 +84,7 @@ const ChatInterface = ({ analysisData }) => {
 
   const clearChat = async () => {
     try {
-      await axios.delete(`/api/chat/${sessionId}`);
+      await axios.delete(`${API_URL}/chat/${sessionId}`);
       setMessages([
         {
           role: 'assistant',

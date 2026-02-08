@@ -13,6 +13,12 @@ const API_URL = process.env.REACT_APP_API_URL || '/api';
 const ENABLE_CHAT = process.env.REACT_APP_ENABLE_CHAT !== 'false';
 const APP_VERSION = process.env.REACT_APP_VERSION || '1.0.0';
 
+// Netlify serverless expects JSON with base64 image; FastAPI accepts multipart
+const isNetlifyFunctions = () => {
+  const url = (API_URL || '').toLowerCase();
+  return url.includes('netlify') || url === '/.netlify/functions';
+};
+
 function App() {
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -29,20 +35,30 @@ function App() {
     reader.onload = (e) => setUploadedImage(e.target.result);
     reader.readAsDataURL(file);
 
-    const formData = new FormData();
-    formData.append('chart', file);
-
     try {
-      // Use environment-based API URL
       const apiEndpoint = `${API_URL}/analyze`;
-      console.log('Calling API:', apiEndpoint);
-      
-      const response = await axios.post(apiEndpoint, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        timeout: 120000, // 2 minutes for Llama reasoning model
-      });
+      let response;
+
+      if (isNetlifyFunctions()) {
+        // Netlify functions: send JSON with base64 image (no multipart in serverless)
+        const base64 = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+        response = await axios.post(apiEndpoint, { image: base64 }, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 120000,
+        });
+      } else {
+        const formData = new FormData();
+        formData.append('chart', file);
+        response = await axios.post(apiEndpoint, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 120000,
+        });
+      }
 
       setAnalysisData(response.data);
       setError(null);

@@ -17,7 +17,7 @@ import logging
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from backend.services.orchestrator import ChartAnalysisOrchestrator
-from backend.config import VISION_MODEL_ID, REASONING_MODEL_ID
+from backend.config import VISION_MODEL_ID, REASONING_MODEL_ID, HF_API_KEY
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -62,6 +62,16 @@ def handler(event, context):
             'body': ''
         }
     
+    if not HF_API_KEY:
+        return {
+            'statusCode': 503,
+            'headers': headers,
+            'body': json.dumps({
+                'error': 'Service unavailable',
+                'message': 'HF_API_KEY is not set. Add it in Netlify Site settings → Environment variables.'
+            })
+        }
+
     try:
         # Validate HTTP method
         if event.get('httpMethod') != 'POST':

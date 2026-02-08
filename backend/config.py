@@ -6,7 +6,10 @@ Hugging Face API, timeouts, and model settings.
 """
 
 import os
+import logging
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -117,21 +120,26 @@ ENABLE_RATE_LIMITING = os.getenv("ENABLE_RATE_LIMITING", "false").lower() == "tr
 # ============================================================================
 
 def validate_config():
-    """Validate critical configuration settings"""
+    """Validate critical configuration settings.
+    When only HF_API_KEY is missing, log warning and allow import (e.g. serverless build);
+    runtime will return 503 until the key is set.
+    """
     errors = []
-    
     if not HF_API_KEY:
         errors.append("HF_API_KEY is not set")
-    
     if VISION_TIMEOUT < 10:
         errors.append("VISION_TIMEOUT should be at least 10 seconds")
-    
     if REASONING_TIMEOUT < 10:
         errors.append("REASONING_TIMEOUT should be at least 10 seconds")
-    
     if errors:
+        only_missing_key = len(errors) == 1 and "HF_API_KEY" in errors[0]
+        if only_missing_key:
+            logger.warning(
+                "HF_API_KEY is not set. Set it in environment variables for AI features. "
+                "Requests will fail with 503 until configured."
+            )
+            return True
         raise ValueError(f"Configuration errors: {', '.join(errors)}")
-    
     return True
 
 

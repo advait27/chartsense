@@ -30,20 +30,34 @@
 # FUNCTION SETTINGS
 # =============================================================================
 [functions]
-  # Directory containing serverless functions
+  # Python serverless functions (directory relative to repo root)
   directory = "netlify/functions"
-  
-  # Function runtime
-  node_bundler = "esbuild"
+  # Max timeout for free tier is 26s; Pro allows up to 26s default, set in UI for longer
+  [functions."analyze"]
+    timeout = 26
+  [functions."chat"]
+    timeout = 30
 
 # =============================================================================
 # REDIRECTS & ROUTING
 # =============================================================================
 
-# API routes to serverless functions
+# API routes to serverless functions (specific routes first)
 [[redirects]]
   from = "/api/analyze"
   to = "/.netlify/functions/analyze"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/chat/*"
+  to = "/.netlify/functions/chat/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
   status = 200
   force = true
 
@@ -74,7 +88,7 @@
     
     # CORS for API endpoints
     Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Methods = "GET, POST, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
 [[headers]]
@@ -83,7 +97,7 @@
     # API-specific headers
     Cache-Control = "no-cache, no-store, must-revalidate"
     Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Methods = "GET, POST, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Max-Age = "3600"
 
@@ -128,15 +142,12 @@
   ENV = "development"
 
 # =============================================================================
-# PLUGINS
+# PLUGINS (optional - uncomment to enable Lighthouse reports)
 # =============================================================================
-
-# Essential monitoring for serverless functions
-[[plugins]]
-  package = "@netlify/plugin-lighthouse"
-  
-  [plugins.inputs]
-    output_path = "lighthouse-reports"
+# [[plugins]]
+#   package = "@netlify/plugin-lighthouse"
+#   [plugins.inputs]
+#     output_path = "lighthouse-reports"
 
 # =============================================================================
 # NOTES

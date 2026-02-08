@@ -57,8 +57,10 @@ Use this checklist before deploying to production.
 - [ ] `frontend-react/.env.production` - Production config
 
 ### Netlify Files ✅
-- [ ] `netlify/functions/analyze.py` - Analysis function
+- [ ] `netlify/functions/analyze.py` - Chart analysis function
+- [ ] `netlify/functions/chat.py` - Chat follow-up function
 - [ ] `netlify/functions/requirements.txt` - Function dependencies
+- [ ] `netlify/functions/runtime.txt` - Python 3.11 (optional)
 
 ## 🚀 Git Repository
 
