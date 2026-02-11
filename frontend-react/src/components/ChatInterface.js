@@ -31,7 +31,7 @@ const ChatInterface = ({ analysisData }) => {
         }
       ]);
     }
-  }, [analysisData]);
+  }, [analysisData, messages.length]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
