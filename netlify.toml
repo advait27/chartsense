@@ -37,10 +37,19 @@
     timeout = 26
   [functions."chat"]
     timeout = 30
+  [functions."health"]
+    timeout = 10
 
 # =============================================================================
 # REDIRECTS & ROUTING
 # =============================================================================
+
+# Health check endpoint
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+  force = true
 
 # API routes to serverless functions (specific routes first)
 [[redirects]]

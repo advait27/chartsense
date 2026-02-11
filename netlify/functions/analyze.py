@@ -23,6 +23,12 @@ from backend.config import VISION_MODEL_ID, REASONING_MODEL_ID, HF_API_KEY
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Log import status (helps debug deployment issues)
+logger.info(f"analyze.py loaded successfully")
+logger.info(f"HF_API_KEY present: {bool(HF_API_KEY)}")
+logger.info(f"Vision model: {VISION_MODEL_ID}")
+logger.info(f"Reasoning model: {REASONING_MODEL_ID}")
+
 # Initialize orchestrator (reuse across invocations for better performance)
 orchestrator = None
 
