@@ -37,21 +37,28 @@ function App() {
 
     try {
       const apiEndpoint = `${API_URL}/analyze`;
+      console.log('Attempting to analyze chart...');
+      console.log('API Endpoint:', apiEndpoint);
+      console.log('Is Netlify Functions:', isNetlifyFunctions());
+      
       let response;
 
       if (isNetlifyFunctions()) {
         // Netlify functions: send JSON with base64 image (no multipart in serverless)
+        console.log('Using Netlify Functions mode (JSON with base64)');
         const base64 = await new Promise((resolve, reject) => {
           const r = new FileReader();
           r.onload = () => resolve(r.result);
           r.onerror = reject;
           r.readAsDataURL(file);
         });
+        console.log('Base64 image prepared, sending request...');
         response = await axios.post(apiEndpoint, { image: base64 }, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 120000,
         });
       } else {
+        console.log('Using FastAPI mode (multipart form data)');
         const formData = new FormData();
         formData.append('chart', file);
         response = await axios.post(apiEndpoint, formData, {
@@ -60,21 +67,32 @@ function App() {
         });
       }
 
+      console.log('Analysis response received:', response.status);
       setAnalysisData(response.data);
       setError(null);
     } catch (err) {
       console.error('Analysis error:', err);
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        hasRequest: !!err.request,
+        hasResponse: !!err.response
+      });
       
       let errorMessage = 'Failed to analyze chart. Please try again.';
       
       if (err.response) {
         // Server responded with error
+        console.error('Server error response:', err.response.data);
         errorMessage = err.response.data?.message || err.response.data?.error || errorMessage;
       } else if (err.request) {
         // Request made but no response
-        errorMessage = 'No response from server. Please check your connection.';
+        console.error('No response received from server');
+        errorMessage = 'No response from server. The API endpoint may not be available. Please check Netlify function logs.';
       } else {
         // Something else went wrong
+        console.error('Request setup error:', err.message);
         errorMessage = err.message || errorMessage;
       }
       

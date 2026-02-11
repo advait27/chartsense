@@ -8,7 +8,7 @@
   base = "frontend-react"
   command = "npm ci && npm run build"
   publish = "build"
-  functions = "../netlify/functions"
+  functions = "netlify/functions"
 
 [build.environment]
   # Node.js version for React build
