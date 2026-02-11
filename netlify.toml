@@ -8,7 +8,8 @@
   base = "frontend-react"
   command = "npm ci && npm run build"
   publish = "build"
-  functions = "netlify/functions"
+  # Functions path must be relative to repo root, not base directory
+  functions = "../netlify/functions"
 
 [build.environment]
   # Node.js version for React build
@@ -30,9 +31,10 @@
 # FUNCTION SETTINGS
 # =============================================================================
 [functions]
-  # Python serverless functions (directory relative to repo root)
+  # Directory is relative to repository root
   directory = "netlify/functions"
-  # Max timeout for free tier is 26s; Pro allows up to 26s default, set in UI for longer
+  
+  # Function-specific timeouts
   [functions."analyze"]
     timeout = 26
   [functions."chat"]
